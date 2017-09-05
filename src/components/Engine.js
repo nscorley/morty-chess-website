@@ -7,6 +7,8 @@ import {
   Grid,
   Col,
   Well,
+  DropdownButton,
+  MenuItem,
 } from 'react-bootstrap';
 import axios from 'axios';
 import ChessBoard from 'chessboardjs';
@@ -17,12 +19,23 @@ import InfoIcon from '../assets/info-icon.png';
 const MOVETIME = 2000;
 
 // TODO: R&M chess pieces
-
 // TODO: random R&M quote for waiting for move
 
 const rickMessages = {
-  // TODO: message for check
-  // TODO: add message for draw
+  check: (
+    <span>
+      <i>"Rikki-Tikki-Tavi, biatch!" - (Season 2, Episode 4)</i>
+      <strong> Check.</strong>
+    </span>
+  ),
+  draw: (
+    <span>
+      <i>
+        "I want cookies and a 90-minute cut of Avatar." - (Season 3, Episode 5).
+      </i>
+      <strong> Draw.</strong>
+    </span>
+  ),
   enginewin: (
     <span>
       <i>
@@ -56,7 +69,8 @@ const rickMessages = {
   engineloss: (
     <span>
       <i>
-        "I want cookies and a 90-minute cut of Avatar." - (Season 3, Episode 5).
+        "You're not going to believe this, because it usually never happens, but
+        I made a mistake" - (Season 1, Episode 6).
       </i>
       <strong> You've checkmated the Rick.</strong>
     </span>
@@ -64,8 +78,16 @@ const rickMessages = {
 };
 
 const standardMessages = {
-  // TODO: message for check
-  // TODO: add message for draw
+  check: (
+    <span>
+      <strong> Check.</strong>
+    </span>
+  ),
+  draw: (
+    <span>
+      <strong> Draw.</strong>
+    </span>
+  ),
   enginewin: (
     <span>
       <strong> Checkmate.</strong>
@@ -96,9 +118,9 @@ const standardMessages = {
 class Engine extends React.Component {
   state = {
     running: false,
-    position: 'start',
     pieces: 'standard',
     message: 'startup',
+    color: 'White',
   };
 
   componentDidMount() {
@@ -121,6 +143,16 @@ class Engine extends React.Component {
 
   handlePieceChange = pieces => {
     this.setState({ pieces });
+  };
+
+  handleColorChange = color => {
+    this.board.orientation(color === 'White' ? 'white' : 'black');
+    this.setState({ color });
+    // trigger move if not thinking
+    if (!this.state.thinking) {
+      this.setState({ message: 'thinking' });
+      this.engineMove();
+    }
   };
 
   // resets board to the start position
@@ -151,11 +183,26 @@ class Engine extends React.Component {
       });
   };
 
+  checkDraw = () => {
+    if (
+      this.game.in_draw() ||
+      this.game.in_stalemate() ||
+      this.game.in_threefold_repetition()
+    ) {
+      // if there is a draw
+      this.setState({ message: 'draw' });
+    }
+  };
+
   // do not pick up pieces if the game is over
   // only pick up pieces for the side to move
   onDragStart = (source, piece, position, orientation) => {
-    // TODO: right now forcing play to be white - make it switchable
-    if (this.game.game_over() === true || piece.search(/^b/) !== -1) {
+    const query = this.state.color === 'White' ? /^b/ : /^w/;
+    if (
+      this.game.game_over() === true ||
+      piece.search(query) !== -1 ||
+      this.state.thinking
+    ) {
       return false;
     }
   };
@@ -172,17 +219,25 @@ class Engine extends React.Component {
     // illegal move
     if (move === null || !this.state.running) return 'snapback';
 
-    // check for checkmate
     if (this.game.in_checkmate()) {
+      // if player checkmated engine
       this.setState({ message: 'engineloss' });
     } else {
       this.setState({ message: 'thinking' });
     }
 
+    this.checkDraw();
+
+    this.engineMove();
+  };
+
+  // triggers the engine to ponder a move and parses the response
+  engineMove = () => {
     // otherwise the move is legal
     this.sendMove()
       .then(res => {
         // TODO: fix promotions
+        // TODO: fix castling? check: 3rk2r/p3pppp/3p4/2p5/8/2P5/PP1PPPPP/RNBQKBNR b KQk - 0 1
         const move = res.data.response.split(' ')[1];
         const source = move.slice(0, 2);
         const target = move.slice(2, 4);
@@ -196,8 +251,11 @@ class Engine extends React.Component {
           promotion: promotion || 'q', // promotion piece irrelevant if null
         });
         this.board.move(formattedMove);
+        this.checkDraw();
         if (this.game.in_checkmate()) {
           this.setState({ message: 'enginewin' });
+        } else if (this.game.in_check()) {
+          this.setState({ message: 'check' });
         } else {
           this.setState({ message: 'yourmove' });
         }
@@ -229,6 +287,9 @@ class Engine extends React.Component {
     return (
       <div className="engine">
         <div className="controls">
+          <Button bsStyle="primary" onClick={this.handleResetBoard}>
+            Reset
+          </Button>{' '}
           <ToggleButtonGroup
             type="radio"
             name="options"
@@ -238,9 +299,18 @@ class Engine extends React.Component {
             <ToggleButton value={'standard'}>Standard</ToggleButton>
             <ToggleButton value={'rick-and-morty'}>Rick & Morty</ToggleButton>
           </ToggleButtonGroup>{' '}
-          <Button bsStyle="primary" onClick={this.handleResetBoard}>
-            Reset
-          </Button>
+          <DropdownButton
+            bsStyle="primary"
+            title={this.state.color}
+            id="color-switcher"
+          >
+            <MenuItem onClick={() => this.handleColorChange('White')}>
+              White
+            </MenuItem>
+            <MenuItem onClick={() => this.handleColorChange('Black')}>
+              Black
+            </MenuItem>
+          </DropdownButton>
         </div>
         <div id="board" />
         <div className="info-message">

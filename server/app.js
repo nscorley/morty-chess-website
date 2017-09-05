@@ -33,7 +33,7 @@ app.get('/engine', (req, res) => {
   // perform appropriate action based on request type parameter
   switch (type) {
     case 'startengine':
-      ls = spawn(path.resolve(__dirname, 'morty-chess-benchmark'));
+      ls = spawn(path.resolve(__dirname, '../src/assets/morty-chess'));
       ls.stdout.pipe(process.stdout);
       break;
     case 'stopengine':
@@ -98,7 +98,6 @@ app.post('/email', (req, res) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       res.send({ ok: false });
-      console.log(error);
     } else {
       res.send({ ok: true });
     }

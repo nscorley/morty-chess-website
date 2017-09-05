@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, Row, Col, Grid } from 'react-bootstrap';
 import downloadIcon from '../assets/download-icon.png';
 import githubIcon from '../assets/github-icon.png';
+import mortyChessZip from '../assets/morty-chess.zip';
 
 const Download = () => (
   <div className="download">
@@ -28,9 +29,9 @@ const Download = () => (
             <Image circle src={githubIcon} />
           </a>
         </Col>
+        {/*  TODO: add readme to zip archive */}
         <Col xs={12} sm={6}>
-          {/*  TODO: make this a functional download link */}
-          <a href="#">
+          <a href={mortyChessZip} download="morty-chess.zip">
             <Image circle src={downloadIcon} />
           </a>
         </Col>
