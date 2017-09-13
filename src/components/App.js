@@ -9,7 +9,6 @@ import Contact from './Contact';
 import Scroll, { scroller } from 'react-scroll'; //Imports scroller mixin, can use as scroller.scrollTo()
 
 let Element = Scroll.Element;
-let scroll = Scroll.animateScroll;
 
 class App extends React.Component {
   scrollToElement = to => {

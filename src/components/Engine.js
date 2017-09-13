@@ -326,11 +326,17 @@ class Engine extends React.Component {
                 </Col>
                 <br />
                 <Col xs={12} sm={10} className="text-holder">
-                  {this.state.pieces === 'standard' ? (
+                  <span>
+                    MortyChess can't be run in the browser{' '}
+                    <strong>
+                      <i>yet</i>
+                    </strong>. Please check back soon!
+                  </span>
+                  {/* {this.state.pieces === 'standard' ? (
                     standardMessages[this.state.message]
                   ) : (
                     rickMessages[this.state.message]
-                  )}
+                  )} */}
                 </Col>
               </div>
             </Grid>
