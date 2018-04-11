@@ -106,10 +106,12 @@ class Contact extends React.Component {
         <Grid>
           <h1>Contact</h1>
           <p>
-            Want to get in touch? Fill out this form and we'll get back to you
-            as soon as we can.
+            Want to get in touch? Shoot us an email at&nbsp;
+            <a href="mailto:mortychessai@gmail.com">
+              mortychessai@gmail.com
+            </a>
           </p>
-          <form>
+          {/* <form>
             <FormGroup
               controlId="formControlEmail"
               validationState={emailError ? 'error' : null}
@@ -141,7 +143,7 @@ class Contact extends React.Component {
             >
               {loading ? 'Processing...' : 'Submit'}
             </Button>
-          </form>
+          </form> */}
         </Grid>
       </div>
     );

@@ -45,7 +45,7 @@ const Download = () => (
               target="_blank"
               rel="noopener noreferrer"
             >
-              Scivs vs. Mac
+              Scid vs. Mac
             </a>{' '}
             for OSX and{' '}
             <a

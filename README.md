@@ -26,7 +26,8 @@ We use ESLint with the extends: "react-app" setting. Ensure that all code is com
 
 ### Authors
 
-* **Nathaniel Corley** - *Full-stack design* - [nscorley](https://github.com/nscorley)
+* **Nathaniel Corley** - *Full-stack design, Engine programming* - [nscorley](https://github.com/nscorley)
+* **Stiven Deleur** - *Engine programming* - [deleurapps](https://github.com/deleurapps)
 
 ### License
 This project is licensed under the MIT License.
